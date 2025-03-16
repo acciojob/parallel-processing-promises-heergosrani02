@@ -10,12 +10,25 @@ const images = [
   { url: "https://picsum.photos/id/239/200/300" },
 ];
 
-btn.addEventListener("click", () => {
-	setInterval(() => {
-		load.style.display = "block";
-	}, 1000)
+function downloadImage(url) {
+  return new Promise((resolve, reject) => {
+    let img = new Image();
+    img.src = url;
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed to load image at ${url}`));
+  });
+}
 
-	new Promise
-})
+btn.addEventListener("click", () => {
+	load.style.display = 'block';
+	Promise.all(images.map(image => downloadImage(image.url))).then(imgs => {
+		load.style.display = 'none';
+		imgs.forEach(img => output.appendChild(img));
+	})
+	.catch(err => {
+		load.style.display = 'none';
+		error.innerText = err.message;
+	});
+});
 
 
